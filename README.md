@@ -22,6 +22,57 @@ This layer depends on:
     - commit : ae8a97f79364bed1abc297636f7933d0e35f22be
 
 
+## add to local.conf
+
+```
+MACHINE ??= "raspberrypi4-64"
+
+
+
+BB_NUMBER_THREADS = "4"
+PARALLEL_MAKE:qt3d = "-j2"
+LICENSE_FLAGS_ACCEPTED += "commercial"
+
+
+# Setting for camera in wayland compositor
+PACKAGECONFIG:remove:pn-qtwayland = "xcomposite-glx"
+VIDEO_CAMERA = "1"
+
+# Setting for CAN 2-CH FD
+KERNEL_DEVICETREE:append = " \
+                        overlays/mcp251xfd.dtbo \
+"
+
+# Setting for i2c
+ENABLE_I2C = "1"
+KERNEL_MODULE_AUTOLOAD:rpi += "i2c-dev i2c-bcm2708"
+
+
+# Set systemd instead sysV
+DISTRO_FEATURES:append = " systemd"
+DISTRO_FEATURES:remove = "sysvinit"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
+DISTRO_FEATURES_BACKFIL_CONSIDERED = "sysvinit"
+VIRTUAL-RUNTIME_initscript = "systemd-compat-units"
+
+# Set wayland for Qt
+DISTRO_FEATURES:remove = "x11 vulkan"
+DISTRO_FEATURES:append = " wayland"
+CORE_IMAGE_EXTRA_INSTALL = "wayland"
+
+# Ignore old license error
+LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"
+
+# Set for qt5 gstreamer
+LICENSE_FLAGS_ACCEPTED += "commercial"
+PACKAGECONFIG:append_pn-qtmultimedia=" gstreamer1.0"
+PACKAGECONFIG:append_pn-gstreamer1.0-plugins-bad = " hls"
+
+IMAGE_FSTYPES = "tar.xz ext3 rpi-sdimg"
+
+```
+
 
 # Details
 
